@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import '../Css/StepOne.css';
 
 const StepOne = ({ nextStep, formData, updateFormData }) => {
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   const validate = () => {
     const newErrors = {};
@@ -18,8 +20,16 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
       nextStep();
     } else {
       setErrors(validationErrors);
+      setTouched({ fullName: true, email: true, phone: true });
     }
   };
+
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
+
+  const isValid = (field) => touched[field] && !errors[field];
+  const isInvalid = (field) => touched[field] && errors[field];
 
   return (
     <div>
@@ -28,31 +38,32 @@ const StepOne = ({ nextStep, formData, updateFormData }) => {
         placeholder="Full Name"
         value={formData.fullName}
         onChange={e => updateFormData('fullName', e.target.value)}
-        className="input-field"
+        onBlur={() => handleBlur('fullName')}
+        className={`input-field ${isValid('fullName') ? 'input-valid' : ''} ${isInvalid('fullName') ? 'input-error' : ''}`}
       />
-      {errors.fullName && <div className="error-text">{errors.fullName}</div>}
+      {isInvalid('fullName') && <div className="error-text">{errors.fullName}</div>}
 
       <input
         type="email"
         placeholder="Email"
         value={formData.email}
         onChange={e => updateFormData('email', e.target.value)}
-        className="input-field"
+        onBlur={() => handleBlur('email')}
+        className={`input-field ${isValid('email') ? 'input-valid' : ''} ${isInvalid('email') ? 'input-error' : ''}`}
       />
-      {errors.email && <div className="error-text">{errors.email}</div>}
+      {isInvalid('email') && <div className="error-text">{errors.email}</div>}
 
       <input
         type="text"
         placeholder="Phone Number"
         value={formData.phone}
         onChange={e => updateFormData('phone', e.target.value)}
-        className="input-field"
+        onBlur={() => handleBlur('phone')}
+        className={`input-field ${isValid('phone') ? 'input-valid' : ''} ${isInvalid('phone') ? 'input-error' : ''}`}
       />
-      {errors.phone && <div className="error-text">{errors.phone}</div>}
+      {isInvalid('phone') && <div className="error-text">{errors.phone}</div>}
 
-      <button onClick={handleNext} className="btn-primary">
-        Continue
-      </button>
+      <button onClick={handleNext} className="btn-primary">Next</button>
     </div>
   );
 };
